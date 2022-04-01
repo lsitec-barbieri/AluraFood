@@ -9,11 +9,11 @@ import android.widget.EditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import br.com.alura.alurafood.R;
+import br.com.alura.alurafood.formatter.FormataTelefoneComDdd;
 import br.com.alura.alurafood.validator.ValidaCpf;
+import br.com.alura.alurafood.validator.ValidaTelefoneComDdd;
 import br.com.alura.alurafood.validator.ValidacaoPadrao;
 import br.com.caelum.stella.format.CPFFormatter;
-import br.com.caelum.stella.validation.CPFValidator;
-import br.com.caelum.stella.validation.InvalidStateException;
 
 public class FormularioCadastroActivity extends AppCompatActivity {
 
@@ -46,8 +46,24 @@ public class FormularioCadastroActivity extends AppCompatActivity {
 
     private void configuraCampoTelefone() {
         TextInputLayout textInputTelefone = findViewById(R.id.formulario_cadastro_campo_telefone);
-        adicionaValidacaoPadrao(textInputTelefone);
+        EditText campoTelefoneComDdd = textInputTelefone.getEditText();
+        ValidaTelefoneComDdd validador = new ValidaTelefoneComDdd(textInputTelefone);
+        final FormataTelefoneComDdd formatador = new FormataTelefoneComDdd();
+        campoTelefoneComDdd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                String telefoneComDdd = campoTelefoneComDdd.getText().toString();
+                if(!hasFocus){
+                    validador.estaValido();
+                }else {
+                    String telefoneComDddSemFormatacao = formatador.removeFormato(telefoneComDdd);
+                    campoTelefoneComDdd.setText(telefoneComDddSemFormatacao);
+                }
+            }
+        });
     }
+
+
 
     private void configuraCampoCpf() {
         TextInputLayout textInputCpf = findViewById(R.id.formulario_cadastro_campo_cpf);
@@ -63,13 +79,13 @@ public class FormularioCadastroActivity extends AppCompatActivity {
                 if (!hasFocus) {
                     validador.estaValido();
                 } else {
-                    adicionaFormatacao(cpfFormatter, campoCpf);
+                    removeFormatacao(cpfFormatter, campoCpf);
                 }
             }
         });
     }
 
-    private void adicionaFormatacao(CPFFormatter cpfFormatter, EditText campoCpf) {
+    private void removeFormatacao(CPFFormatter cpfFormatter, EditText campoCpf) {
         String cpf = campoCpf.getText().toString();
         try {
             String cpfSemformato = cpfFormatter.unformat(cpf);
