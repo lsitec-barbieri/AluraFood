@@ -1,11 +1,10 @@
 package br.com.alura.alurafood.validator;
 
-import android.text.Editable;
 import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-public class ValidacaoPadrao {
+public class ValidacaoPadrao implements Validador {
 
     private final TextInputLayout textInputCampo;
     private final EditText campo;
@@ -25,10 +24,11 @@ public class ValidacaoPadrao {
 
     }
 
+    @Override
     public boolean estaValido() {
-        if (validaCampoObrigatorio()) return true;
+        if (validaCampoObrigatorio()) return false;
         removeErro();
-        return false;
+        return true;
     }
 
     public void removeErro() {

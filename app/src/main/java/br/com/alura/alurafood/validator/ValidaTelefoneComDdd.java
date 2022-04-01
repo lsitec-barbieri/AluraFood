@@ -6,7 +6,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import br.com.alura.alurafood.formatter.FormataTelefoneComDdd;
 
-public class ValidaTelefoneComDdd {
+public class ValidaTelefoneComDdd implements Validador{
 
     private final TextInputLayout textInputTelefoneComDdd;
     private final ValidacaoPadrao validacaoPadrao;
@@ -29,12 +29,14 @@ public class ValidaTelefoneComDdd {
         return false;
     }
 
+    @Override
     public boolean estaValido(){
-        if(validacaoPadrao.estaValido()) return true;
+        if(!validacaoPadrao.estaValido()) return false;
         String telefoneComDdd = campoTelefoneComDdd.getText().toString();
-        if(validaEntreDezouOnzeDigitos(telefoneComDdd)) return true;
-        adicionaFormatacao(telefoneComDdd);
-        return false;
+        String telefoneComDddSemFormatacao = formatador.removeFormato(telefoneComDdd);
+        if(validaEntreDezouOnzeDigitos(telefoneComDddSemFormatacao)) return false;
+        adicionaFormatacao(telefoneComDddSemFormatacao);
+        return true;
     }
 
     private void adicionaFormatacao(String telefoneComDdd) {

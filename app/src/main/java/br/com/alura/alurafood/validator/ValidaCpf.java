@@ -8,7 +8,7 @@ import br.com.caelum.stella.format.CPFFormatter;
 import br.com.caelum.stella.validation.CPFValidator;
 import br.com.caelum.stella.validation.InvalidStateException;
 
-public class ValidaCpf {
+public class ValidaCpf implements Validador{
 
     private final TextInputLayout textInputCpf;
     private final EditText campoCpf;
@@ -41,15 +41,23 @@ public class ValidaCpf {
 
     }
 
+    @Override
     public boolean estaValido(){
+        if(!validadorPadrao.estaValido()) return false;
         String cpf = campoCpf.getText().toString();
-        if(validadorPadrao.estaValido()) return true;
-        if(validaCampoCom11Digitos(cpf)) return true;
-        if(validaCalculoCpf(cpf)) return true;
+        String cpfSemformato = cpf;
+        try {
+            cpfSemformato = formatador.unformat(cpf);
+            campoCpf.setText(cpfSemformato);
+        } catch (IllegalArgumentException e) {
 
-        adicionaFormatacao(cpf);
+        }
+        if(validaCampoCom11Digitos(cpfSemformato)) return false;
+        if(validaCalculoCpf(cpfSemformato)) return false;
 
-        return false;
+        adicionaFormatacao(cpfSemformato);
+
+        return true;
     }
 
     private void adicionaFormatacao(String cpf) {
